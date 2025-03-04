@@ -1,0 +1,339 @@
+package jiraAutomate;
+
+import java.io.ObjectInputFilter.Status;
+import java.lang.classfile.instruction.ExceptionCatch;
+import java.time.Duration;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.concurrent.TimeUnit;
+
+import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.StaleElementReferenceException;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.FindBy;
+import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.Select;
+import org.openqa.selenium.support.ui.Wait;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+public class TestCaseExecutionPage {
+
+	public WebDriver driver;
+	WebDriverWait wait;
+
+	public TestCaseExecutionPage(WebDriver driver) {
+
+		this.driver = driver;
+		wait = new WebDriverWait(driver, 15);
+	}
+
+	@FindBy(xpath = "//textarea[@role='combobox']")
+	public WebElement defectBox;
+	
+	@FindBy(xpath = "//a[@role='presentation']")
+	public WebElement defectNumber;
+	
+	@FindBy(xpath = "//span[contains(@class,'aui-icon aui-icon-small aui-iconfont-arrow-down dropDown-Trigger')]")
+	public WebElement valueDropdownDownwardArrow;
+
+	@FindBy(xpath = "//a[@class='next-page-execution'] | //a[@class='prev-page-execution']")
+	public WebElement prevAndNextDefectIDButton;
+
+	@FindBy(xpath = "//a[@class='eButton']")
+	public WebElement selectE;
+
+	@FindBy(xpath = "//button[@id='listViewBtn']")
+	public WebElement clickListTab;
+	
+	@FindBy(xpath = "//input[@value='Execute']")
+	public WebElement executionStatus;
+	
+	@FindBy(xpath = "//a[text()='BSBDTR-1616']/parent::h1")
+	public WebElement defectIDVerify;
+	
+	@FindBy(xpath = "//div[@id='readonly-comment-div']/*")
+	public WebElement commentBox;
+	
+	@FindBy(xpath = "//textarea[@placeholder='Start Typing...']")
+	public WebElement enterTextcommentBox;
+	
+	@FindBy(xpath = "//span[@class='trigger-dropDown']")
+	public List<WebElement> passFailDropdownArrow;
+	
+	//String VerifyDefect = defectIDVerify.getText();
+	
+	public void clickPassFailDropdownArrow(String status) throws InterruptedException {
+		
+		int length = passFailDropdownArrow.size();
+		System.out.println("Size of the Elements are=" + length);
+		 String statusArrowFirst ="(//span[@class='trigger-dropDown'])[";
+         String statusArrowSecond ="]";
+         String statusSelectFirst ="(//li[@title='" + status + "'])[";
+         String statusSelectSecond ="]";
+         for(int i =1; i<=length;i++) {
+//        	 while(i!=1) {
+//        	 try{
+//        		 wait.until(ExpectedConditions.visibilityOf(staleElement));
+//        	 }
+//        	 catch (Exception e) {
+//        		 wait.until(ExpectedConditions.visibilityOf(staleElement));
+//			}}
+        	 while(i!=length) {
+        	 WebElement index= wait.until(ExpectedConditions.visibilityOf(passFailDropdownArrow.get(i)));
+        	 System.out.println("Index ="+index);
+        	 break;
+        	 }
+             WebElement StatusArrow = driver.findElement(By.xpath(statusArrowFirst+i+statusArrowSecond));
+             WebElement StatusSelect = driver.findElement(By.xpath(statusSelectFirst+i+statusSelectSecond));
+             System.out.println("value="+StatusArrow);
+             System.out.println("value="+StatusSelect);
+//			try{
+//				staleElementAction(StatusArrow, "WAITCLICABLE", "");
+//			}
+//			catch (Exception e) {
+//				staleElementAction(StatusArrow, "WAITCLICABLE", "");	
+//				}
+             
+//             try {
+//				Thread.sleep(5000);
+//			} catch (InterruptedException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//				
+				//wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath(statusArrowFirst+i+statusArrowSecond)));
+				JavascriptExecutor js = (JavascriptExecutor) driver;
+				//wait.until(waitforElement(StatusArrow));
+				((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView();", StatusArrow);
+				js.executeScript("arguments[0].click();", StatusArrow);
+				wait.until(waitforElement(StatusSelect));
+				js.executeScript("arguments[0].click();", StatusSelect);
+				try {
+				wait.until(ExpectedConditions.stalenessOf(StatusSelect));
+				}
+					catch (Exception e) {
+						Thread.sleep(3000);
+						System.out.println("Sleep is executed for 3 seconds");
+					}
+				}
+			    
+		}
+
+	public WebElement orderID(String order) {
+		WebElement Order_Number = driver.findElement(By.xpath("//div[contains(text(),'" + order + "')]"));
+		return Order_Number;
+	}
+
+	public void SelectOrder(String scenario,String status,String order) throws InterruptedException {
+
+		// String arrValues[] = ("ORDER_ID").split("\\|");
+
+		//String[] arrValues = { /*"BSBDTR-1553", "BSBDTR-490", "BSBDTR-1276","BSBDTR-1398","BSBDTR-1400","BSBDTR-1387", */"BSBDTR-490","BSBDTR-1276", "BSBDTR-1655"};
+		//String[] orderValues = {/*"OR-01587017", "OR-01587007","OR-01587011", "SanityTesting 24Feb", "19133764","testingggggg",*/"OR-01587244", "OR-01587247","OR-01586066"};
+
+		//String ordersAre = "";
+
+//		for (String i : arrValues) {
+//			ordersAre = ordersAre + i + " ";
+//		}
+
+		//System.out.println("Orders are= [" + ordersAre + "]");
+
+		//for (int i = 0; i < arrValues.length; i++) {
+		    System.out.println("BSBDTR ID =" + scenario);
+		    SearchOrder(scenario);
+		    String ExecutionStatusValue = "//div[contains(text(),'" + scenario + "')]/../div[@class='execution-status']/*";
+		    WebElement ExecutionStatus = driver.findElement(By.xpath(ExecutionStatusValue));
+		    String ExecutionStatusText=ExecutionStatus.getText();
+		    System.out.println("Execution Status Value="+ExecutionStatusText);
+			if(ExecutionStatusText.toString().equalsIgnoreCase("UNEXECUTED"))	
+		{
+			PassOrderIDInCommentBox(order,status);
+			clickPassFailDropdownArrow(status);
+			SelectOverallExecutionStatus();
+		}
+			else
+			{
+				System.out.println(scenario+" "+"is already executed");
+			}
+	}
+
+	public void SearchOrder(String ORDER) {
+		
+		int FLAGS = 0;
+//		String Verify = "//a[text()='" + ORDER + "']/parent::h1";
+//		WebElement VerifyDefect = driver.findElement(By.xpath(Verify));
+//		String VerifyDefectText=VerifyDefect.getText();
+//		System.out.println("VerifyDefectText value="+VerifyDefectText);
+		while (FLAGS >= 0 && FLAGS != 1) {
+			try {
+				wait.until(waitforElement(orderID(ORDER)));
+				JavascriptExecutor js = (JavascriptExecutor) driver;
+				wait.until(ExpectedConditions.elementToBeClickable(orderID(ORDER)));
+				Thread.sleep(5000);
+				((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView();", orderID(ORDER));
+				Thread.sleep(5000);
+				Actions action = new Actions(driver);
+				action.moveToElement(orderID(ORDER)).build().perform();
+				js.executeScript("arguments[0].click();", orderID(ORDER));
+				Thread.sleep(5000);
+//				if (VerifyDefectText.equalsIgnoreCase(ORDER)){
+//					System.out.println("Defect ID is already selected");
+//				}
+//				else {
+//					SearchOrder(ORDER);				
+//				}
+				String Verify = "//a[text()='" + ORDER + "']/parent::h1";
+				try {
+				WebElement VerifyDefect = driver.findElement(By.xpath(Verify));
+				wait.until(waitforElement(VerifyDefect));
+				System.out.println("Verified Order ID Selected:" + VerifyDefect.getText());
+				}
+				catch (Exception e) {
+					System.out.println("Again searching for Defect ID as click was not performed successfuly");
+					SearchOrder(ORDER);
+				}
+				
+				FLAGS++;
+
+			} catch (Exception e) {
+				System.out.println("Defect ID is not there on this page click on next button");
+				try {
+					if (prevAndNextDefectIDButton.isDisplayed() && FLAGS != 1) {
+						JavascriptExecutor js = (JavascriptExecutor) driver;
+						((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView();", prevAndNextDefectIDButton);
+						js.executeScript("arguments[0].click();", prevAndNextDefectIDButton);
+						SearchOrder(ORDER);
+					}
+				} catch (Exception e1) {
+					System.out.println(
+							"Defect ID is already selected if FLAGS value is 1 and if not then Defect ID is not in this Release Cycle");
+					System.out.println("FLAGS value is =" + FLAGS);
+					break;
+
+				}
+			}
+		}
+	}	
+	
+	public void clickAccessPointArrow() throws InterruptedException {
+		 String staleElement ="(//li[@title='PASS'])[";
+		 String staleElementSecond ="]";
+		int i=0; 
+		int length = passFailDropdownArrow.size();
+		System.out.println("Size of the Elements are=" + length);
+		i++;
+		for (WebElement ele : passFailDropdownArrow) 
+		{
+			 while(i!=1)
+			 {
+			    try{
+			    	
+			    	wait.until(ExpectedConditions.stalenessOf(ele));
+			    } 
+			    catch (StaleElementReferenceException e1) {
+					e1.printStackTrace();
+				}}
+				System.out.println("Value of ele="+ele);
+				JavascriptExecutor js = (JavascriptExecutor) driver;
+				//wait.until(waitforElement(StatusArrow));
+				((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView();", ele);
+				js.executeScript("arguments[0].click();", ele);
+				try {
+					Thread.sleep(6000);
+				} catch (StaleElementReferenceException e1) {
+					e1.printStackTrace();
+				}
+				//wait.until(Expectedcon  (By.xpath(ele + "/../../preceding-sibling::i")));
+				//wait.until(waitforElement(ele + "/../../preceding-sibling::i")));
+				WebElement StatusArrow = driver.findElement(By.xpath(staleElement+i+staleElementSecond));
+				js.executeScript("arguments[0].click();", StatusArrow);
+			
+		}
+	}
+	
+	public void SelectOverallExecutionStatus() {
+
+		wait.until(waitforElement(executionStatus));
+		JavascriptExecutor js = (JavascriptExecutor) driver;
+		js.executeScript("arguments[0].click();", executionStatus);
+		try {
+			Thread.sleep(5000);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public void PassOrderIDInCommentBox(String ID,String Status) throws InterruptedException {
+
+		if(Status.equalsIgnoreCase("PASS"))
+		{
+		wait.until(waitforElement(commentBox));
+		//((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView();", commentBox);
+	    wait.until(ExpectedConditions.elementToBeClickable(commentBox));
+	    JavascriptExecutor js = (JavascriptExecutor) driver;
+        Thread.sleep(4000);
+	    Actions action = new Actions(driver);
+		action.moveToElement(commentBox).doubleClick(commentBox).build().perform();
+		js.executeScript("arguments[0].click();", commentBox);
+		try {
+		wait.until(waitforElement(enterTextcommentBox));
+		}
+		catch (Exception e) {
+			System.out.println("Again searching for text box to enter Order ID");
+			PassOrderIDInCommentBox(ID,Status);
+		}
+		js.executeScript("arguments[0].click();", enterTextcommentBox);
+		enterTextcommentBox.sendKeys(ID);
+				Thread.sleep(2000);
+				}
+		else
+		    {
+			try {
+				wait.until(waitforElement(defectBox));
+				}
+				catch (Exception e) {
+					wait.until(waitforElement(defectBox));
+				}
+		    wait.until(ExpectedConditions.elementToBeClickable(defectBox));
+		    Actions action = new Actions(driver);
+			action.moveToElement(defectBox).doubleClick(defectBox).build().perform();
+			JavascriptExecutor js = (JavascriptExecutor) driver;
+			js.executeScript("arguments[0].click();", defectBox);
+			Thread.sleep(2000);
+			defectBox.sendKeys(ID);
+			try {
+			wait.until(waitforElement(defectNumber));
+			js.executeScript("arguments[0].click();", defectNumber);
+			}
+			catch (Exception e) {
+				wait.until(waitforElement(defectNumber));
+				js.executeScript("arguments[0].click();", defectNumber);
+			}
+			
+		}
+	
+	}
+	
+	public static ExpectedCondition<Boolean> waitforElement(WebElement el) {
+		return new ExpectedCondition<Boolean>() {
+			public Boolean apply(WebDriver driver) {
+				boolean flag = false;
+				try {
+					if (el.isDisplayed()) {
+						flag = true;
+					}
+				} catch (Exception e) {
+					System.out.println("inside catch block " + e.getMessage());
+				}
+				return flag;
+			}
+
+		};
+	}
+}

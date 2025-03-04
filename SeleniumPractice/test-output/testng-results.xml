@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testng-results ignored="0" total="4" passed="2" failed="1" skipped="1">
+  <reporter-output>
+  </reporter-output>
+  <suite started-at="2025-03-04T15:35:38 IST" name="Default suite" finished-at="2025-03-04T15:37:21 IST" duration-ms="103016">
+    <groups>
+    </groups>
+    <test started-at="2025-03-04T15:35:38 IST" name="Default test" finished-at="2025-03-04T15:37:21 IST" duration-ms="103016">
+      <class name="jiraAutomate.JiraAutomationModule">
+        <test-method signature="LaunchJira()[pri:0, instance:jiraAutomate.JiraAutomationModule@1573f9fc]" started-at="2025-03-04T15:35:38 IST" name="LaunchJira" finished-at="2025-03-04T15:35:53 IST" duration-ms="14565" status="PASS">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- LaunchJira -->
+        <test-method signature="LoginSSO()[pri:0, instance:jiraAutomate.JiraAutomationModule@1573f9fc]" started-at="2025-03-04T15:35:53 IST" name="LoginSSO" finished-at="2025-03-04T15:35:56 IST" depends-on-methods="jiraAutomate.JiraAutomationModule.LaunchJira" duration-ms="2778" status="PASS">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- LoginSSO -->
+        <test-method signature="SelectRelease()[pri:0, instance:jiraAutomate.JiraAutomationModule@1573f9fc]" started-at="2025-03-04T15:35:56 IST" name="SelectRelease" finished-at="2025-03-04T15:37:21 IST" depends-on-methods="jiraAutomate.JiraAutomationModule.LoginSSO" duration-ms="85630" status="FAIL">
+          <exception class="org.openqa.selenium.TimeoutException">
+            <message>
+              <![CDATA[Expected condition failed: waiting for jiraAutomate.SelectExecutionCyclePage$1@1a6f5124 (tried for 60 second(s) with 500 milliseconds interval)
+Build info: version: '3.141.59', revision: 'e82be7d358', time: '2018-11-14T08:17:03'
+System info: host: 'BA-000460524', ip: '192.168.29.68', os.name: 'Windows 10', os.arch: 'amd64', os.version: '10.0', java.version: '23.0.1'
+Driver info: org.openqa.selenium.chrome.ChromeDriver
+Capabilities {acceptInsecureCerts: false, browserName: chrome, browserVersion: 133.0.6943.142, chrome: {chromedriverVersion: 133.0.6943.53 (9a80935019b0..., userDataDir: C:\Users\MOHD~1.TAS\AppData...}, fedcm:accounts: true, goog:chromeOptions: {debuggerAddress: localhost:56215}, javascriptEnabled: true, networkConnectionEnabled: false, pageLoadStrategy: normal, platform: WINDOWS, platformName: WINDOWS, proxy: Proxy(), setWindowRect: true, strictFileInteractability: false, timeouts: {implicit: 0, pageLoad: 300000, script: 30000}, unhandledPromptBehavior: dismiss and notify, webauthn:extension:credBlob: true, webauthn:extension:largeBlob: true, webauthn:extension:minPinLength: true, webauthn:extension:prf: true, webauthn:virtualAuthenticators: true}
+Session ID: afa1ffb20a77b46a16465e2f8d9fa1c6]]>
+            </message>
+            <full-stacktrace>
+              <![CDATA[org.openqa.selenium.TimeoutException: Expected condition failed: waiting for jiraAutomate.SelectExecutionCyclePage$1@1a6f5124 (tried for 60 second(s) with 500 milliseconds interval)
+Build info: version: '3.141.59', revision: 'e82be7d358', time: '2018-11-14T08:17:03'
+System info: host: 'BA-000460524', ip: '192.168.29.68', os.name: 'Windows 10', os.arch: 'amd64', os.version: '10.0', java.version: '23.0.1'
+Driver info: org.openqa.selenium.chrome.ChromeDriver
+Capabilities {acceptInsecureCerts: false, browserName: chrome, browserVersion: 133.0.6943.142, chrome: {chromedriverVersion: 133.0.6943.53 (9a80935019b0..., userDataDir: C:\Users\MOHD~1.TAS\AppData...}, fedcm:accounts: true, goog:chromeOptions: {debuggerAddress: localhost:56215}, javascriptEnabled: true, networkConnectionEnabled: false, pageLoadStrategy: normal, platform: WINDOWS, platformName: WINDOWS, proxy: Proxy(), setWindowRect: true, strictFileInteractability: false, timeouts: {implicit: 0, pageLoad: 300000, script: 30000}, unhandledPromptBehavior: dismiss and notify, webauthn:extension:credBlob: true, webauthn:extension:largeBlob: true, webauthn:extension:minPinLength: true, webauthn:extension:prf: true, webauthn:virtualAuthenticators: true}
+Session ID: afa1ffb20a77b46a16465e2f8d9fa1c6
+at org.openqa.selenium.support.ui.WebDriverWait.timeoutException(WebDriverWait.java:95)
+at org.openqa.selenium.support.ui.FluentWait.until(FluentWait.java:272)
+at jiraAutomate.SelectExecutionCyclePage.SelectDefectIDCount(SelectExecutionCyclePage.java:110)
+at jiraAutomate.SelectExecutionCyclePage.SelectDefectCountAndClickExecutionButtonE(SelectExecutionCyclePage.java:104)
+at jiraAutomate.JiraAutomationModule.SelectRelease(JiraAutomationModule.java:64)
+at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+at org.testng.internal.invokers.MethodInvocationHelper.invokeMethod(MethodInvocationHelper.java:141)
+at org.testng.internal.invokers.TestInvoker.invokeMethod(TestInvoker.java:686)
+at org.testng.internal.invokers.TestInvoker.invokeTestMethod(TestInvoker.java:230)
+at org.testng.internal.invokers.MethodRunner.runInSequence(MethodRunner.java:63)
+at org.testng.internal.invokers.TestInvoker$MethodInvocationAgent.invoke(TestInvoker.java:992)
+at org.testng.internal.invokers.TestInvoker.invokeTestMethods(TestInvoker.java:203)
+at org.testng.internal.invokers.TestMethodWorker.invokeTestMethods(TestMethodWorker.java:154)
+at org.testng.internal.invokers.TestMethodWorker.run(TestMethodWorker.java:134)
+at java.base/java.util.ArrayList.forEach(ArrayList.java:1597)
+at org.testng.TestRunner.privateRun(TestRunner.java:739)
+at org.testng.TestRunner.run(TestRunner.java:614)
+at org.testng.SuiteRunner.runTest(SuiteRunner.java:421)
+at org.testng.SuiteRunner.runSequentially(SuiteRunner.java:413)
+at org.testng.SuiteRunner.privateRun(SuiteRunner.java:373)
+at org.testng.SuiteRunner.run(SuiteRunner.java:312)
+at org.testng.SuiteRunnerWorker.runSuite(SuiteRunnerWorker.java:52)
+at org.testng.SuiteRunnerWorker.run(SuiteRunnerWorker.java:95)
+at org.testng.TestNG.runSuitesSequentially(TestNG.java:1274)
+at org.testng.TestNG.runSuitesLocally(TestNG.java:1208)
+at org.testng.TestNG.runSuites(TestNG.java:1112)
+at org.testng.TestNG.run(TestNG.java:1079)
+at org.testng.remote.AbstractRemoteTestNG.run(AbstractRemoteTestNG.java:115)
+at org.testng.remote.RemoteTestNG.initAndRun(RemoteTestNG.java:293)
+at org.testng.remote.RemoteTestNG.main(RemoteTestNG.java:91)
+]]>
+            </full-stacktrace>
+          </exception> <!-- org.openqa.selenium.TimeoutException -->
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- SelectRelease -->
+        <test-method signature="SelectOrders(java.lang.String,java.lang.String,java.lang.String)[pri:0, instance:jiraAutomate.JiraAutomationModule@1573f9fc]" started-at="2025-03-04T15:37:21 IST" name="SelectOrders" finished-at="2025-03-04T15:37:21 IST" depends-on-methods="jiraAutomate.JiraAutomationModule.SelectRelease" duration-ms="0" status="SKIP">
+          <exception class="java.lang.Throwable">
+            <message>
+              <![CDATA[Method jiraAutomate.JiraAutomationModule.SelectOrders() on instance jiraAutomate.JiraAutomationModule@1573f9fc depends on not successfully finished methods 
+[jiraAutomate.JiraAutomationModule.SelectRelease() on instance jiraAutomate.JiraAutomationModule@1573f9fc]]]>
+            </message>
+            <full-stacktrace>
+              <![CDATA[java.lang.Throwable: Method jiraAutomate.JiraAutomationModule.SelectOrders() on instance jiraAutomate.JiraAutomationModule@1573f9fc depends on not successfully finished methods 
+[jiraAutomate.JiraAutomationModule.SelectRelease() on instance jiraAutomate.JiraAutomationModule@1573f9fc]
+at org.testng.internal.invokers.TestInvoker.invokeTestMethods(TestInvoker.java:159)
+at org.testng.internal.invokers.TestMethodWorker.invokeTestMethods(TestMethodWorker.java:154)
+at org.testng.internal.invokers.TestMethodWorker.run(TestMethodWorker.java:134)
+at java.base/java.util.ArrayList.forEach(ArrayList.java:1597)
+at org.testng.TestRunner.privateRun(TestRunner.java:739)
+at org.testng.TestRunner.run(TestRunner.java:614)
+at org.testng.SuiteRunner.runTest(SuiteRunner.java:421)
+at org.testng.SuiteRunner.runSequentially(SuiteRunner.java:413)
+at org.testng.SuiteRunner.privateRun(SuiteRunner.java:373)
+at org.testng.SuiteRunner.run(SuiteRunner.java:312)
+at org.testng.SuiteRunnerWorker.runSuite(SuiteRunnerWorker.java:52)
+at org.testng.SuiteRunnerWorker.run(SuiteRunnerWorker.java:95)
+at org.testng.TestNG.runSuitesSequentially(TestNG.java:1274)
+at org.testng.TestNG.runSuitesLocally(TestNG.java:1208)
+at org.testng.TestNG.runSuites(TestNG.java:1112)
+at org.testng.TestNG.run(TestNG.java:1079)
+at org.testng.remote.AbstractRemoteTestNG.run(AbstractRemoteTestNG.java:115)
+at org.testng.remote.RemoteTestNG.initAndRun(RemoteTestNG.java:293)
+at org.testng.remote.RemoteTestNG.main(RemoteTestNG.java:91)
+]]>
+            </full-stacktrace>
+          </exception> <!-- java.lang.Throwable -->
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- SelectOrders -->
+      </class> <!-- jiraAutomate.JiraAutomationModule -->
+    </test> <!-- Default test -->
+  </suite> <!-- Default suite -->
+</testng-results>
