@@ -83,11 +83,11 @@ public class TestCaseExecutionPage {
 //        	 catch (Exception e) {
 //        		 wait.until(ExpectedConditions.visibilityOf(staleElement));
 //			}}
-        	 while(i!=length) {
-        	 WebElement index= wait.until(ExpectedConditions.visibilityOf(passFailDropdownArrow.get(i)));
-        	 System.out.println("Index ="+index);
-        	 break;
-        	 }
+//        	 while(i!=length) {
+//        	 WebElement index= wait.until(ExpectedConditions.visibilityOf(passFailDropdownArrow.get(i)));
+//        	 System.out.println("Index ="+index);
+//        	 break;
+//        	 }
              WebElement StatusArrow = driver.findElement(By.xpath(statusArrowFirst+i+statusArrowSecond));
              WebElement StatusSelect = driver.findElement(By.xpath(statusSelectFirst+i+statusSelectSecond));
              System.out.println("value="+StatusArrow);
@@ -170,7 +170,7 @@ public class TestCaseExecutionPage {
 //		WebElement VerifyDefect = driver.findElement(By.xpath(Verify));
 //		String VerifyDefectText=VerifyDefect.getText();
 //		System.out.println("VerifyDefectText value="+VerifyDefectText);
-		while (FLAGS >= 0 && FLAGS != 1) {
+		while (FLAGS != 1) {
 			try {
 				wait.until(waitforElement(orderID(ORDER)));
 				JavascriptExecutor js = (JavascriptExecutor) driver;
