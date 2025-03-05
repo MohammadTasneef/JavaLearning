@@ -19,7 +19,7 @@ public class JiraAutomationModule {
 	String PASSWORD = "REPLACED";
 	String RELEASE_CYCLE_NAME="Sanity Tests"/*"Deployment/Production Tests"*/;
 	String RELEASE_CYCLE_YEAR="2025 - Sanity Execution"/*"May 16th F5 SFDC Release"*/;
-	String RELEASE_CYCLE_DATE="03-03-2025";
+	String RELEASE_CYCLE_DATE="05-03-2025";
 
 	@Test
 	public void LaunchJira() {
@@ -68,7 +68,6 @@ public class JiraAutomationModule {
 	public void SelectOrders(String scenario,String status,String order) throws InterruptedException  {
 		TestCaseExecutionPage cycle = PageFactory.initElements(driver, TestCaseExecutionPage.class);
 		cycle.SelectOrder(scenario,status,order);
-		//cycle.clickAccessPointArrow();
 	}
 	
 	@DataProvider(name="JiraData")
