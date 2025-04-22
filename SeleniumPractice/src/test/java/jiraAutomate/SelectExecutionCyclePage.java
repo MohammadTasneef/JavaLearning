@@ -8,6 +8,9 @@ import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.Reporter;
+
+import junit.framework.Assert;
 
 public class SelectExecutionCyclePage {
 
@@ -33,8 +36,14 @@ public class SelectExecutionCyclePage {
 	@FindBy(xpath = "//a[@class='eButton']")
 	public WebElement selectE;
 	
-	@FindBy(xpath = "//a[contains(@id,'aui-test-cycles-tab')]/*")
+	@FindBy(xpath = "//a[contains(@id,'aui-test-cycles-tab')]/* | //h1[contains(., 'view this project')]")
 	public WebElement cycleSummaryText;
+	
+	@FindBy(xpath = "//a[contains(@id,'aui-test-cycles-tab')]/*")
+	public WebElement cycleSummaryTextAllowed;
+	
+	@FindBy(xpath = "//h1[contains(., 'view this project')]")
+	public WebElement cycleSummaryTextBlocked;
 
 	@FindBy(xpath = "//a[contains(@id,'aui-test-cycles-tab')]/*")
 	public WebElement cycleDate;
@@ -58,10 +67,21 @@ public class SelectExecutionCyclePage {
 	}
 
 	public void OpenCycleSummary() {
-
+		
 		wait.until(waitforElement(cycleSummaryText));
-		JavascriptExecutor js = (JavascriptExecutor) driver;
-		js.executeScript("arguments[0].click();", cycleSummaryText);
+		try {
+		    if (cycleSummaryTextAllowed.isDisplayed()) {
+		    	JavascriptExecutor js = (JavascriptExecutor) driver;
+		    	js.executeScript("arguments[0].click();", cycleSummaryTextAllowed);
+		    	System.out.println("Cycle Summary Tab Clicked");
+		        Reporter.log("Cycle Summary Tab Clicked");
+		    }
+		} catch (Exception e) {
+			System.out.println("You are not allowed to view this project");
+			Reporter.log("You are not allowed to view this project"+ e.getMessage());
+			Assert.fail("Blocked- You are not allowed to view this project");
+		}
+		
 	}
 
 	public void SelectReleaseCycle(String cycleName) {
