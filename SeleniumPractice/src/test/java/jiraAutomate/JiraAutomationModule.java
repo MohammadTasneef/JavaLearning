@@ -12,10 +12,14 @@ import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.PageFactory;
+import org.testng.annotations.AfterSuite;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
-import com.telus.utility.ExcelData;
+import com.telus.utility.BrowserUtils;
+import com.telus.utility.ExcelDataRead;
+import com.telus.utility.ExcelDataWrite;
+import com.telus.utility.ExtentReportManager;
 import com.telus.utility.JsonDataReader;
 
 public class JiraAutomationModule {
@@ -24,34 +28,19 @@ public class JiraAutomationModule {
 
 	@Test
 	public void LaunchJira() {
-		// Set The system property
-		System.setProperty("webdriver.chrome.driver", "D:\\ChromeDriversNew\\chromedriver.exe");
 
-		// creating instance of Chrome driver
-		driver = new ChromeDriver();
+		driver = BrowserUtils.launchJira("LaunchJira");
 
-		// Storing the URL
-		String url = "https://jira.tsl.telus.com/projects/B2BM?selectedItem=com.thed.zephyr.je:zephyr-tests-page#test-cycles-tab";
-        //https://jira.tsl.telus.com/projects/B2BM?selectedItem=com.thed.zephyr.je:zephyr-tests-page#test-cycles-tab
-		
-		// Lunch the browser
-		driver.get(url);
-
-		// maximize the window
-		driver.manage().window().maximize();
-
-		driver.manage().timeouts().implicitlyWait(60, TimeUnit.SECONDS);
-
-		System.out.println("SSO Page appeared successfully");
 	}
 
 	@Test(dataProvider = "testData", dependsOnMethods = { "LaunchJira" })
-	public void LoginSSO(JSONObject testData) { // Changed parameter type to JSONObject
+	public void LoginSSO(JSONObject testData) {                    // Changed parameter type to JSONObject
 		try {
 			LoginJiraPage login = PageFactory.initElements(driver, LoginJiraPage.class);
 			login.LoginSSO(testData.get("USERNAME").toString(), testData.get("PASSWORD").toString());
 		} catch (Exception e) {
 			e.printStackTrace();
+			ExtentReportManager.getTest().fail("Failed to execute LoginSSO test: " + e.getMessage());
 			throw new RuntimeException("Failed to execute LoginSSO test: " + e.getMessage());
 		}
 	}
@@ -67,19 +56,29 @@ public class JiraAutomationModule {
 	}
 
 	@Test(dataProvider = "JiraData", dependsOnMethods = { "SelectRelease" })
-	public void SelectOrders(String scenario, String status, String order, String stepNumber, String continueExecution)
-			throws InterruptedException {
+	public void SelectOrders(String scenario, String status, String order, String stepNumber, String continueExecution,
+			String executionStatus) throws InterruptedException {
 		TestCaseExecutionPage cycle = PageFactory.initElements(driver, TestCaseExecutionPage.class);
 		cycle.SelectOrder(scenario, status, order, stepNumber, continueExecution);
 
+	}
+
+	@AfterSuite()
+	public void SelectOrders() {
+		ExcelDataWrite write = PageFactory.initElements(driver, ExcelDataWrite.class);
+		write.updateExecutionStatusColumn();
+		ExtentReportManager.flushReports(); // 💡 Flush the report
+		if (driver != null) {
+			//driver.quit();
+		}
 	}
 
 	@DataProvider(name = "JiraData")
 	public String[][] getData() throws IOException {
 		String excelPath = ".\\ExcelData\\Book1.xlsx";
 
-		int Totalrows = ExcelData.getRowCount(excelPath, "Sheet2");
-		int TotalColumns = ExcelData.getCellCount(excelPath, "Sheet2", 1);
+		int Totalrows = ExcelDataRead.getRowCount(excelPath, "Manual");
+		int TotalColumns = ExcelDataRead.getCellCount(excelPath, "Manual", 1);
 
 		String loginData[][] = new String[Totalrows][TotalColumns];
 
@@ -87,7 +86,7 @@ public class JiraAutomationModule {
 
 			for (int j = 0; j < TotalColumns; j++) {
 
-				loginData[i - 1][j] = ExcelData.getCellData(excelPath, "Sheet2", i, j);
+				loginData[i - 1][j] = ExcelDataRead.getCellData(excelPath, "Manual", i, j);
 			}
 
 		}

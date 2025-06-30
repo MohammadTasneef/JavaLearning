@@ -22,6 +22,8 @@ import org.openqa.selenium.support.ui.Select;
 import org.openqa.selenium.support.ui.Wait;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import com.telus.utility.ExtentReportManager;
+
 public class TestCaseExecutionPage {
 
 	public static WebDriver driver;
@@ -79,6 +81,7 @@ public class TestCaseExecutionPage {
 		
 		int length = passFailDropdownArrow.size();
 		System.out.println("Size of the Elements are=" + length);
+		ExtentReportManager.getTest().info("Size of the Elements are=" + length);
 		 String statusArrowFirst ="(//span[@class='trigger-dropDown'])[";
          String statusArrowSecond ="]";
          String statusSelectFirst ="(//li[@title='" + status + "'])[";
@@ -86,7 +89,7 @@ public class TestCaseExecutionPage {
          
          for(int i =1; i<=length;i++) {
         	 
-        	 if(status.equalsIgnoreCase("FAIL") || status.equalsIgnoreCase("OBSOLETE"))
+        	 if(status.equalsIgnoreCase("FAIL") || status.equalsIgnoreCase("BLOCKED"))
  			{
  				 FailedOrBlockedTestCases(status,stepNumber,continueExecution);
  				 break;
@@ -160,15 +163,18 @@ public class TestCaseExecutionPage {
 		//System.out.println("Orders are= [" + ordersAre + "]");
 
 		//for (int i = 0; i < arrValues.length; i++) {
-		    System.out.println("BSBDTR ID =" + scenario);
+		    System.out.println("JIRA ID =" + scenario);
+		    ExtentReportManager.getTest().info("JIRA ID =" + scenario);
 		    String[] parts = scenario.split("-");
 		    String Split=parts[1].trim();
 		    System.out.println("The Test Case No is:"+Split);
+		    ExtentReportManager.getTest().info("The Test Case No is:"+Split);
 		    SearchOrder(Split);
 		    String ExecutionStatusValue = "//div[contains(text(),'" + Split + "')]/../div[@class='execution-status']/*";
 		    WebElement ExecutionStatus = driver.findElement(By.xpath(ExecutionStatusValue));
 		    String ExecutionStatusText=ExecutionStatus.getText();
 		    System.out.println("Execution Status Value="+ExecutionStatusText);
+		    ExtentReportManager.getTest().info("Execution Status Value="+ExecutionStatusText);
 			if(ExecutionStatusText.toString().equalsIgnoreCase("UNEXECUTED"))	
 		{
 			PassOrderIDInCommentBox(order,status);
@@ -177,6 +183,7 @@ public class TestCaseExecutionPage {
 		}
 			else
 			{
+				ExtentReportManager.getTest().info(Split+" "+"is already executed");
 				System.out.println(Split+" "+"is already executed");
 			}
 	}
@@ -190,7 +197,8 @@ public class TestCaseExecutionPage {
 //		System.out.println("VerifyDefectText value="+VerifyDefectText);
 		while (FLAGS != 1) {
 			try {
-				System.out.println("RealValue:"+orderID(Split).getText());
+				System.out.println("The Exact Jira ID to be searched:"+orderID(Split).getText());
+				ExtentReportManager.getTest().info("The Exact Jira ID to be searched:"+orderID(Split).getText());
 				Split=orderID(Split).getText().trim();
 				wait.until(waitforElement(orderID(Split)));
 				JavascriptExecutor js = (JavascriptExecutor) driver;
@@ -212,9 +220,11 @@ public class TestCaseExecutionPage {
 				try {
 				WebElement VerifyDefect = driver.findElement(By.xpath(Verify));
 				wait.until(waitforElement(VerifyDefect));
+				ExtentReportManager.getTest().info("Verified Order ID Selected:" + VerifyDefect.getText());
 				System.out.println("Verified Order ID Selected:" + VerifyDefect.getText());
 				}
 				catch (Exception e) {
+					ExtentReportManager.getTest().info("Again searching for Defect ID as click was not performed successfuly");
 					System.out.println("Again searching for Defect ID as click was not performed successfuly");
 					SearchOrder(Split);
 				}
@@ -222,15 +232,18 @@ public class TestCaseExecutionPage {
 				FLAGS++;
 
 			} catch (Exception e) {
+				ExtentReportManager.getTest().info("Defect ID is not there on this page click on next button");
 				System.out.println("Defect ID is not there on this page click on next button");
 				try {
 					if (prevAndNextDefectIDButton.isDisplayed() && FLAGS != 1) {
 						JavascriptExecutor js = (JavascriptExecutor) driver;
 						((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView();", prevAndNextDefectIDButton);
 						js.executeScript("arguments[0].click();", prevAndNextDefectIDButton);
+						ExtentReportManager.getTest().pass("Previous/Next button clicked");
 						SearchOrder(Split);
 					}
 				} catch (Exception e1) {
+					ExtentReportManager.getTest().info("Defect ID is already selected if FLAGS value is 1 and if not then Defect ID is not in this Release Cycle and the FLAG Value is="+FLAGS);
 					System.out.println(
 							"Defect ID is already selected if FLAGS value is 1 and if not then Defect ID is not in this Release Cycle");
 					System.out.println("FLAGS value is =" + FLAGS);
@@ -280,7 +293,7 @@ public class TestCaseExecutionPage {
 	public void SelectOverallExecutionStatus(String status) throws InterruptedException {
 
 		String FailedOrBlockedExecution ="//li[@class='updateStatus'  and text()='" + status + "']";
-		if(status.equalsIgnoreCase("FAIL") || status.equalsIgnoreCase("OBSOLETE"))
+		if(status.equalsIgnoreCase("FAIL") || status.equalsIgnoreCase("BLOCKED"))
 		{
 			wait.until(waitforElement(failedOrBlockedexecutionStatusArrow));
 			JavascriptExecutor js = (JavascriptExecutor) driver;
@@ -288,6 +301,7 @@ public class TestCaseExecutionPage {
 			wait.until(waitforElement(failedOrBlockedexecutionStatusArrow));
 			js.executeScript("arguments[0].click();", failedOrBlockedexecutionStatusArrow);
 			WebElement Execution = driver.findElement(By.xpath(FailedOrBlockedExecution));
+			ExtentReportManager.getTest().info("Overall Execution Status is="+Execution.getText());
 			wait.until(waitforElement(Execution));
 			js.executeScript("arguments[0].click();", Execution);
 			Thread.sleep(5000);	
@@ -324,6 +338,7 @@ public class TestCaseExecutionPage {
 		}
 		js.executeScript("arguments[0].click();", enterTextcommentBox);
 		enterTextcommentBox.sendKeys(ID);
+		ExtentReportManager.getTest().pass("Successfully Entered Order ID in Text Box="+ID);
 				Thread.sleep(2000);
 				}
 		else
@@ -341,15 +356,15 @@ public class TestCaseExecutionPage {
 			js.executeScript("arguments[0].click();", defectBox);
 			Thread.sleep(2000);
 			defectBox.sendKeys(ID);
-			try {
-			wait.until(waitforElement(defectNumber));
-			js.executeScript("arguments[0].click();", defectNumber);
-			}
-			catch (Exception e) {
-				wait.until(waitforElement(defectNumber));
-				js.executeScript("arguments[0].click();", defectNumber);
-			}
-			
+//			try {
+//			wait.until(waitforElement(defectNumber));
+//			js.executeScript("arguments[0].click();", defectNumber);
+//			}
+//			catch (Exception e) {
+//				wait.until(waitforElement(defectNumber));
+//				js.executeScript("arguments[0].click();", defectNumber);
+//			}
+			ExtentReportManager.getTest().pass("Successfully Entered Defect ID in Text Box="+ID);
 		}
 	
 	}
@@ -429,6 +444,7 @@ public void FailedOrBlockedTestCases(String status,String stepNumber,String cont
 		
 		int length = passFailDropdownArrow.size();
 		System.out.println("Size of the Elements are=" + length);
+		ExtentReportManager.getTest().info("Size of the Elements are=" + length);
 		 String statusArrowFirst ="(//span[@class='trigger-dropDown'])[";
          String statusArrowSecond ="]";
          String statusSelectFirst ="(//li[@title='PASS'])[";
@@ -437,8 +453,10 @@ public void FailedOrBlockedTestCases(String status,String stepNumber,String cont
 		 for(int i =1; i<=length;i++) {
 			String IntegerToString=Integer.toString(i).trim();
 			System.out.println("IntegerToString="+IntegerToString);
+			ExtentReportManager.getTest().info("IntegerToString="+IntegerToString);
 			if(IntegerToString.equalsIgnoreCase(stepNumber))
 			{
+				ExtentReportManager.getTest().info("Order got failed at this step");
 				System.out.println("Order got failed at this step");
 				String FailedstatusSelectFirst ="(//li[@title='" + status + "'])[";
 				WebElement FailedStatusArrow = driver.findElement(By.xpath(statusArrowFirst+i+statusArrowSecond));
@@ -449,12 +467,14 @@ public void FailedOrBlockedTestCases(String status,String stepNumber,String cont
 				wait.until(waitforElement(FailedStatusSelect));
 				js.executeScript("arguments[0].click();", FailedStatusSelect);
 				Thread.sleep(2000);
-			    if(continueExecution.equalsIgnoreCase("Yes"))
+			    if(continueExecution.trim().equalsIgnoreCase("Yes"))
 			   {
+			    	ExtentReportManager.getTest().info("Execution Continue Status="+continueExecution);
 			    continue;
 			   }
 			    else
 			   {
+			    ExtentReportManager.getTest().info("Execution Continue Status="+continueExecution);
 			    break;
 			   }
 			 }
@@ -487,6 +507,7 @@ public void FailedOrBlockedTestCases(String status,String stepNumber,String cont
 					}
 				} catch (Exception e) {
 					System.out.println("inside catch block " + e.getMessage());
+					ExtentReportManager.getTest().info("inside catch block");
 				}
 				return flag;
 			}

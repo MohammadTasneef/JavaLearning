@@ -10,6 +10,8 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.Reporter;
 
+import com.telus.utility.ExtentReportManager;
+
 import junit.framework.Assert;
 
 public class SelectExecutionCyclePage {
@@ -26,6 +28,9 @@ public class SelectExecutionCyclePage {
 
 	@FindBy(xpath = "//button[@id='listViewBtn']")
 	public WebElement clickListTab;
+	
+	@FindBy(xpath = "//li[contains(text(),'10')]/following-sibling::li[contains(text(),'25')]")
+	public WebElement validatingDropdownCountValue;
 	
 	@FindBy(xpath = "//li[contains(text(),'50')]")
 	public WebElement select50Count;
@@ -74,11 +79,11 @@ public class SelectExecutionCyclePage {
 		    	JavascriptExecutor js = (JavascriptExecutor) driver;
 		    	js.executeScript("arguments[0].click();", cycleSummaryTextAllowed);
 		    	System.out.println("Cycle Summary Tab Clicked");
-		        Reporter.log("Cycle Summary Tab Clicked");
+		    	ExtentReportManager.getTest().pass("Cycle Summary Tab Clicked");
 		    }
 		} catch (Exception e) {
 			System.out.println("You are not allowed to view this project");
-			Reporter.log("You are not allowed to view this project"+ e.getMessage());
+			ExtentReportManager.getTest().fail("Blocked- You are not allowed to view this project: " + e.getMessage());
 			Assert.fail("Blocked- You are not allowed to view this project");
 		}
 		
@@ -91,6 +96,8 @@ public class SelectExecutionCyclePage {
 				clickReleaseCycleArrow(cycleName));
 		JavascriptExecutor js = (JavascriptExecutor) driver;
 		js.executeScript("arguments[0].click();", clickReleaseCycleArrow(cycleName));
+		ExtentReportManager.getTest().pass("Release Cycle Selected Successfully");
+
 		try {
 			Thread.sleep(2000);
 		} catch (InterruptedException e) {
@@ -104,6 +111,7 @@ public class SelectExecutionCyclePage {
 		((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView();", clickReleaseCycleYear(cycleYear));
 		JavascriptExecutor js = (JavascriptExecutor) driver;
 		js.executeScript("arguments[0].click();", clickReleaseCycleYear(cycleYear));
+		ExtentReportManager.getTest().pass("Release cycle year selected successfully");
 		try {
 			Thread.sleep(2000);
 		} catch (InterruptedException e) {
@@ -117,6 +125,8 @@ public class SelectExecutionCyclePage {
 		wait.until(ExpectedConditions.elementToBeClickable(clickReleaseCycleDate(cycleName)));
 		JavascriptExecutor js = (JavascriptExecutor) driver;
 		js.executeScript("arguments[0].click();", clickReleaseCycleDate(cycleName));
+		ExtentReportManager.getTest().pass("Release cycle date selected successfully");
+
 	}
 	
 	public void SelectDefectCountAndClickExecutionButtonE() {
@@ -132,10 +142,14 @@ public class SelectExecutionCyclePage {
 		((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView();", valueDropdownDownwardArrow);
 		js.executeScript("arguments[0].click();", valueDropdownDownwardArrow);
 		try {
-			wait.until(waitforElement(select50Count));
-			js.executeScript("arguments[0].click();", select50Count);
-		} catch (Exception e) {
+			wait.until(waitforElement(validatingDropdownCountValue));
+			ExtentReportManager.getTest().pass("Already 50 value count is selected");
 			System.out.println("Already 50 value count is selected");
+
+		} catch (Exception e) {
+			js.executeScript("arguments[0].click();", select50Count);
+			ExtentReportManager.getTest().pass("50 value count is selected");
+			System.out.println("50 value count is selected");
 		}
 	}
 	
@@ -148,8 +162,11 @@ public class SelectExecutionCyclePage {
 			js.executeScript("arguments[0].click();", selectE);
 			wait.until(waitforElement(clickListTab));
 			js.executeScript("arguments[0].click();", clickListTab);
+			ExtentReportManager.getTest().pass("Element E clicked");
+
 		} catch (Exception e) {
 			System.out.println("Element E is already Selected");
+			ExtentReportManager.getTest().info("Element E is already Selected");
 		}
 	}
 
@@ -162,6 +179,7 @@ public class SelectExecutionCyclePage {
 						flag = true;
 					}
 				} catch (Exception e) {
+					ExtentReportManager.getTest().info("inside catch block");
 					System.out.println("inside catch block " + e.getMessage());
 				}
 				return flag;
