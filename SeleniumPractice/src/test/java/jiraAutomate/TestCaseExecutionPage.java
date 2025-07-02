@@ -3,11 +3,13 @@ package jiraAutomate;
 import java.io.ObjectInputFilter.Status;
 import java.lang.classfile.instruction.ExceptionCatch;
 import java.time.Duration;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
-
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.StaleElementReferenceException;
@@ -77,70 +79,48 @@ public class TestCaseExecutionPage {
 	
 	//String VerifyDefect = defectIDVerify.getText();
 	
-	public void clickPassFailDropdownArrow(String status,String stepNumber,String continueExecution) throws InterruptedException {
-		
-		int length = passFailDropdownArrow.size();
-		System.out.println("Size of the Elements are=" + length);
-		ExtentReportManager.getTest().info("Size of the Elements are=" + length);
-		 String statusArrowFirst ="(//span[@class='trigger-dropDown'])[";
-         String statusArrowSecond ="]";
-         String statusSelectFirst ="(//li[@title='" + status + "'])[";
-         String statusSelectSecond ="]";
-         
-         for(int i =1; i<=length;i++) {
-        	 
-        	 if(status.equalsIgnoreCase("FAIL") || status.equalsIgnoreCase("BLOCKED"))
- 			{
- 				 FailedOrBlockedTestCases(status,stepNumber,continueExecution);
- 				 break;
- 			}
-//        	 while(i!=1) {
-//        	 try{
-//        		 wait.until(ExpectedConditions.visibilityOf(staleElement));
-//        	 }
-//        	 catch (Exception e) {
-//        		 wait.until(ExpectedConditions.visibilityOf(staleElement));
-//			}}
-//        	 while(i!=length) {
-//        	 WebElement index= wait.until(ExpectedConditions.visibilityOf(passFailDropdownArrow.get(i)));
-//        	 System.out.println("Index ="+index);
-//        	 break;
-//        	 }
-             WebElement StatusArrow = driver.findElement(By.xpath(statusArrowFirst+i+statusArrowSecond));
-             WebElement StatusSelect = driver.findElement(By.xpath(statusSelectFirst+i+statusSelectSecond));
-             System.out.println("value="+StatusArrow);
-             System.out.println("value="+StatusSelect);
-//			try{
-//				staleElementAction(StatusArrow, "WAITCLICABLE", "");
-//			}
-//			catch (Exception e) {
-//				staleElementAction(StatusArrow, "WAITCLICABLE", "");	
-//				}
-             
-//             try {
-//				Thread.sleep(5000);
-//			} catch (InterruptedException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//				
-				//wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath(statusArrowFirst+i+statusArrowSecond)));
-				JavascriptExecutor js = (JavascriptExecutor) driver;
-				//wait.until(waitforElement(StatusArrow));
-				((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView();", StatusArrow);
-				js.executeScript("arguments[0].click();", StatusArrow);
-				wait.until(waitforElement(StatusSelect));
-				js.executeScript("arguments[0].click();", StatusSelect);
-				try {
-				wait.until(ExpectedConditions.stalenessOf(StatusSelect));
-				}
-					catch (Exception e) {
-						Thread.sleep(3000);
-						System.out.println("Sleep is executed for 3 seconds");
-					}
-				}
-			    
+	public void clickPassFailDropdownArrow(String status, String stepNumber, String continueExecution) throws InterruptedException {
+
+	    int length = passFailDropdownArrow.size();
+	    System.out.println("Size of the Elements = " + length);
+	    ExtentReportManager.getTest().info("Size of the Elements = " + length);
+
+	    // Fast fail check
+	    if (status.equalsIgnoreCase("FAIL") || status.equalsIgnoreCase("BLOCKED")) {
+	        FailedOrBlockedTestCases(status, stepNumber, continueExecution);
+	        return; // Exit early since it will handle failure steps
+	    }
+
+	    // Prepare reusable XPath templates
+	    String statusArrowBase = "(//span[@class='trigger-dropDown'])[";
+	    String statusSelectBase = "(//li[@title='" + status + "'])[";
+	    JavascriptExecutor js = (JavascriptExecutor) driver;
+
+	    for (int i = 1; i <= length; i++) {
+	        String arrowXpath = statusArrowBase + i + "]";
+	        String statusXpath = statusSelectBase + i + "]";
+
+	        try {
+	            WebElement arrowElement = driver.findElement(By.xpath(arrowXpath));
+	            WebElement statusElement = driver.findElement(By.xpath(statusXpath));
+
+	            js.executeScript("arguments[0].scrollIntoView({block: 'center'});", arrowElement);
+	            js.executeScript("arguments[0].click();", arrowElement);
+
+	            wait.until(waitforElement(statusElement));
+	            js.executeScript("arguments[0].click();", statusElement);
+
+	            wait.until(ExpectedConditions.stalenessOf(statusElement)); // Faster than Thread.sleep()
+
+	        } catch (StaleElementReferenceException stale) {
+	            System.out.println("Stale element at index " + i + " — retrying");
+	            i--; // Retry same index
+	        } catch (Exception e) {
+	            System.out.println("Element not interactable at index " + i + ": " + e.getMessage());
+	        }
+	    }
 	}
+
 
 	public WebElement orderID(String order) {
 		WebElement Order_Number = driver.findElement(By.xpath("//div[contains(text(),'" + order + "')]"));
@@ -296,6 +276,8 @@ public class TestCaseExecutionPage {
 		if(status.equalsIgnoreCase("FAIL") || status.equalsIgnoreCase("BLOCKED"))
 		{
 			wait.until(waitforElement(failedOrBlockedexecutionStatusArrow));
+			Actions actions = new Actions(driver);
+			actions.moveToElement(failedOrBlockedexecutionStatusArrow).perform();
 			JavascriptExecutor js = (JavascriptExecutor) driver;
 			((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView();", failedOrBlockedexecutionStatusArrow);
 			wait.until(waitforElement(failedOrBlockedexecutionStatusArrow));
@@ -343,29 +325,53 @@ public class TestCaseExecutionPage {
 				}
 		else
 		    {
-			try {
-				wait.until(waitforElement(defectBox));
-				}
-				catch (Exception e) {
-					wait.until(waitforElement(defectBox));
-				}
-		    wait.until(ExpectedConditions.elementToBeClickable(defectBox));
-		    Actions action = new Actions(driver);
-			action.moveToElement(defectBox).doubleClick(defectBox).build().perform();
-			JavascriptExecutor js = (JavascriptExecutor) driver;
-			js.executeScript("arguments[0].click();", defectBox);
-			Thread.sleep(2000);
-			defectBox.sendKeys(ID);
 //			try {
-//			wait.until(waitforElement(defectNumber));
-//			js.executeScript("arguments[0].click();", defectNumber);
-//			}
-//			catch (Exception e) {
-//				wait.until(waitforElement(defectNumber));
-//				js.executeScript("arguments[0].click();", defectNumber);
-//			}
-			ExtentReportManager.getTest().pass("Successfully Entered Defect ID in Text Box="+ID);
-		}
+//				wait.until(waitforElement(defectBox));
+//				}
+//				catch (Exception e) {
+//					wait.until(waitforElement(defectBox));
+//				}
+//		    wait.until(ExpectedConditions.elementToBeClickable(defectBox));
+//		    Actions action = new Actions(driver);
+//			action.moveToElement(defectBox).doubleClick(defectBox).build().perform();
+//			JavascriptExecutor js = (JavascriptExecutor) driver;
+//			js.executeScript("arguments[0].click();", defectBox);
+//			Thread.sleep(2000);
+//			defectBox.sendKeys(ID);
+//			ExtentReportManager.getTest().pass("Successfully Entered Defect ID in Text Box="+ID);
+//		}
+			
+			try {
+			    // Wait for defectBox to be present and interactable
+			    wait.until(ExpectedConditions.elementToBeClickable(defectBox));
+			    
+			    // Double-click and activate field
+			    Actions action = new Actions(driver);
+			    action.moveToElement(defectBox).doubleClick().perform();
+			    
+			    // Click using JS in case it's overlaid
+			    JavascriptExecutor js = (JavascriptExecutor) driver;
+			    js.executeScript("arguments[0].click();", defectBox);
+			    
+			    // Clear existing text if needed, then enter defect ID
+			    defectBox.clear();
+			    defectBox.sendKeys(ID);  // e.g., FNDA-58156
+
+			    // Wait for the dropdown to load and show the matching item
+			    By suggestionItem = By.xpath("//ul[@id='history-search']//li[contains(@class,'aui-list-item')]//b[text()='" + ID + "']");
+			    wait.until(ExpectedConditions.visibilityOfElementLocated(suggestionItem));
+
+			    // Click the matching suggestion
+			    WebElement match = driver.findElement(suggestionItem);
+			    js.executeScript("arguments[0].click();", match);  // Use JS in case of tricky overlays
+
+			    ExtentReportManager.getTest().pass("Successfully selected defect ID from dropdown: " + ID);
+			    
+			} catch (Exception e) {
+			    ExtentReportManager.getTest().fail("Failed to select defect ID: " + ID + " due to " + e.getMessage());
+			    throw e;
+			}}
+
 	
 	}
 	
@@ -440,62 +446,55 @@ public class TestCaseExecutionPage {
 //		return TestStep;
 //	}
 	
-public void FailedOrBlockedTestCases(String status,String stepNumber,String continueExecution) throws InterruptedException {
-		
-		int length = passFailDropdownArrow.size();
-		System.out.println("Size of the Elements are=" + length);
-		ExtentReportManager.getTest().info("Size of the Elements are=" + length);
-		 String statusArrowFirst ="(//span[@class='trigger-dropDown'])[";
-         String statusArrowSecond ="]";
-         String statusSelectFirst ="(//li[@title='PASS'])[";
-         String statusSelectSecond ="]";
-		 System.out.println("Test Step Number="+stepNumber);
-		 for(int i =1; i<=length;i++) {
-			String IntegerToString=Integer.toString(i).trim();
-			System.out.println("IntegerToString="+IntegerToString);
-			ExtentReportManager.getTest().info("IntegerToString="+IntegerToString);
-			if(IntegerToString.equalsIgnoreCase(stepNumber))
-			{
-				ExtentReportManager.getTest().info("Order got failed at this step");
-				System.out.println("Order got failed at this step");
-				String FailedstatusSelectFirst ="(//li[@title='" + status + "'])[";
-				WebElement FailedStatusArrow = driver.findElement(By.xpath(statusArrowFirst+i+statusArrowSecond));
-	            WebElement FailedStatusSelect = driver.findElement(By.xpath(FailedstatusSelectFirst+i+statusSelectSecond));
-	            JavascriptExecutor js = (JavascriptExecutor) driver;
-				((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView();", FailedStatusArrow);
-				js.executeScript("arguments[0].click();", FailedStatusArrow);
-				wait.until(waitforElement(FailedStatusSelect));
-				js.executeScript("arguments[0].click();", FailedStatusSelect);
-				Thread.sleep(2000);
-			    if(continueExecution.trim().equalsIgnoreCase("Yes"))
-			   {
-			    	ExtentReportManager.getTest().info("Execution Continue Status="+continueExecution);
-			    continue;
-			   }
-			    else
-			   {
-			    ExtentReportManager.getTest().info("Execution Continue Status="+continueExecution);
-			    break;
-			   }
-			 }
-            WebElement StatusArrow = driver.findElement(By.xpath(statusArrowFirst+i+statusArrowSecond));
-            WebElement StatusSelect = driver.findElement(By.xpath(statusSelectFirst+i+statusSelectSecond));
-            System.out.println("value="+StatusArrow);
-            System.out.println("value="+StatusSelect);
-				JavascriptExecutor js = (JavascriptExecutor) driver;
-				((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView();", StatusArrow);
-				js.executeScript("arguments[0].click();", StatusArrow);
-				wait.until(waitforElement(StatusSelect));
-				js.executeScript("arguments[0].click();", StatusSelect);
-				try {
-				wait.until(ExpectedConditions.stalenessOf(StatusSelect));
-				}
-					catch (Exception e) {
-						Thread.sleep(3000);
-						System.out.println("Sleep is executed for 3 seconds");
-					}
-				}
-}
+	public void FailedOrBlockedTestCases(String status, String stepNumbers, String continueExecution) throws InterruptedException {
+	    
+	    int length = passFailDropdownArrow.size();
+	    System.out.println("Size of the Elements = " + length);
+
+	    Set<String> stepNumberSet = new HashSet<>(Arrays.asList(stepNumbers.trim().split("\\s*,\\s*")));
+	    ExtentReportManager.getTest().info("Failing at Step Numbers: " + stepNumberSet);
+
+	    JavascriptExecutor js = (JavascriptExecutor) driver;
+
+	    for (int i = 1; i <= length; i++) {
+	        String currentStep = Integer.toString(i);
+	        boolean isFailStep = stepNumberSet.contains(currentStep);
+
+	        String arrowXpath = "(//span[@class='trigger-dropDown'])[" + i + "]";
+	        String statusXpath = isFailStep ?
+	                "(//li[@title='" + status + "'])[" + i + "]" :
+	                "(//li[@title='PASS'])[" + i + "]";
+
+	        WebElement arrow = driver.findElement(By.xpath(arrowXpath));
+	        WebElement statusOption = driver.findElement(By.xpath(statusXpath));
+
+	        js.executeScript("arguments[0].scrollIntoView({block: 'center'});", arrow);
+	        js.executeScript("arguments[0].click();", arrow);
+
+	        wait.until(waitforElement(statusOption));
+	        js.executeScript("arguments[0].click();", statusOption);
+
+	        if (isFailStep) {
+	            System.out.println("Step " + currentStep + " set to " + status);
+	            ExtentReportManager.getTest().info("Step " + currentStep + " set to " + status);
+
+	            // If continueExecution is "No", exit after first match
+	            if (!"Yes".equalsIgnoreCase(continueExecution.trim())) {
+	                break;
+	            }
+	        }
+
+	        // Wait only when needed
+	        try {
+	            wait.until(ExpectedConditions.stalenessOf(statusOption));
+	        } catch (Exception e) {
+	            Thread.sleep(2000); // reduced wait
+	            System.out.println("Fallback sleep of 1 second executed");
+	        }
+	    }
+	}
+
+
  
 	public static ExpectedCondition<Boolean> waitforElement(WebElement el) {
 		return new ExpectedCondition<Boolean>() {
