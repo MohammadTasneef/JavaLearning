@@ -3,14 +3,11 @@
 <suite name="Failed suite [Default suite]" guice-stage="DEVELOPMENT">
   <test thread-count="5" name="Default test(failed)">
     <classes>
-      <class name="jiraAutomate.JiraAutomationModule">
+      <class name="com.telus.utility.GoogleSheetReaderPrinter">
         <methods>
-          <include name="SelectRelease"/>
-          <include name="LaunchJira"/>
-          <include name="LoginSSO"/>
-          <include name="SelectOrders"/>
+          <include name="testSheetDataFetch"/>
         </methods>
-      </class> <!-- jiraAutomate.JiraAutomationModule -->
+      </class> <!-- com.telus.utility.GoogleSheetReaderPrinter -->
     </classes>
   </test> <!-- Default test(failed) -->
 </suite> <!-- Failed suite [Default suite] -->
