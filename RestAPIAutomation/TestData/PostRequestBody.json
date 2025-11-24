@@ -1,0 +1,18 @@
+{
+  "id": 1,
+  "name": "iPhone 13",
+  "description": "Apple iPhone 13 with 128GB storage",
+  "price": {
+    "amount": 1999,
+    "currency": "USD"
+  },
+  "category": "Electronics",
+  "brand": "ApplePhone",
+  "releaseDate": "2020-10-23",
+  "images": [
+    {
+      "url": "https://example.com/image.jpg",
+      "altText": "iPhone 13"
+    }
+  ]
+}
