@@ -32,6 +32,6 @@ public class MaximumNumber {
 			max=array[i];
 		}
 		}
-	System.out.println("maximum number is = "+max);
+	System.out.println("maximum number is = "+max); //Maxima
 }
 }
