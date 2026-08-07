@@ -15,11 +15,11 @@ import com.telus.utility.ExcelData;
 public class JiraAutomationModule {
 
 	WebDriver driver;
-	String USERNAME = "REPLACED";
+	String USERNAME = "x22";
 	String PASSWORD = "";
 	String RELEASE_CYCLE_NAME="Sanity Tests"/*"Deployment/Production Tests"*/;
-	String RELEASE_CYCLE_YEAR="2025 - Sanity Execution"/*"May 16th F5 SFDC Release"*/;
-	String RELEASE_CYCLE_DATE="05-03-2025";
+	String RELEASE_CYCLE_YEAR="YYYY - Sanity Execution";
+	String RELEASE_CYCLE_DATE="DD-MM-YYYY";
 
 	@Test
 	public void LaunchJira() {
