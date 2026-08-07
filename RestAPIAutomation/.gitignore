@@ -3,3 +3,8 @@
 .settings/
 .classpath
 .project
+.idea/
+*.iml
+
+# never commit a real token
+*.local.properties
