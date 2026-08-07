@@ -16,7 +16,7 @@ public class JiraAutomationModule {
 
 	WebDriver driver;
 	String USERNAME = "REPLACED";
-	String PASSWORD = "REPLACED";
+	String PASSWORD = "";
 	String RELEASE_CYCLE_NAME="Sanity Tests"/*"Deployment/Production Tests"*/;
 	String RELEASE_CYCLE_YEAR="2025 - Sanity Execution"/*"May 16th F5 SFDC Release"*/;
 	String RELEASE_CYCLE_DATE="05-03-2025";
