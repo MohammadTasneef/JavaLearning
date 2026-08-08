@@ -1,0 +1,19 @@
+target/
+bin/
+test-output/
+
+# Eclipse
+.classpath
+.project
+.settings/
+
+# IntelliJ
+.idea/
+*.iml
+
+# VS Code
+.vscode/
+
+# never commit credentials
+service-account.json
+*.local.properties
