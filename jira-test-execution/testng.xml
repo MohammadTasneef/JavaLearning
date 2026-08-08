@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+
+<!-- The steps share one browser session and run in order, so this suite must stay
+     single threaded. -->
+<suite name="Zephyr Test Execution">
+
+	<test name="Release cycle execution">
+		<classes>
+			<class name="com.automation.tests.JiraTestExecutionTest" />
+		</classes>
+	</test>
+
+</suite>
